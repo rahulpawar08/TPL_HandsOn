@@ -8,17 +8,17 @@ namespace TPL.DataFlow.Implementation
 {
     public class DataFlowExecutor : IDataFlowExecutor
     {
-        private TransformBlock<string, IEnumerable<List<string>>> _fetcherBlock;
-        private TransformBlock<IEnumerable<List<string>>, IEnumerable<List<string>>> _deltaCalculatorBlock;
-        private TransformBlock<IEnumerable<List<string>>, IEnumerable<List<string>>> _storeBlock;
-        private ActionBlock<IEnumerable<List<string>>> _notifyBlock;
+        private TransformBlock<string, List<string>> _fetcherBlock;
+        private TransformBlock<List<string>, List<string>> _deltaCalculatorBlock;
+        private TransformBlock<List<string>, List<string>> _storeBlock;
+        private ActionBlock<List<string>> _notifyBlock;
 
         public DataFlowExecutor()
         {
-            _fetcherBlock =(TransformBlock <string, IEnumerable<List<string>>>) new FetcherBlock().GenerateBlock();
-            _deltaCalculatorBlock = (TransformBlock<IEnumerable<List<string>>, IEnumerable<List<string>>>)new DeltaCalculatorBlock().GenerateBlock();
-            _storeBlock = (TransformBlock <IEnumerable<List<string>>, IEnumerable<List<string>>>)new StoreBlock().GenerateBlock();
-            _notifyBlock = (ActionBlock<IEnumerable<List<string>>>)new NotifyBlock().GenerateBlock();
+            _fetcherBlock =(TransformBlock <string, List<string>>) new FetcherBlock().GenerateBlock();
+            _deltaCalculatorBlock = (TransformBlock<List<string>, List<string>>)new DeltaCalculatorBlock().GenerateBlock();
+            _storeBlock = (TransformBlock <List<string>, List<string>>)new StoreBlock().GenerateBlock();
+            _notifyBlock = (ActionBlock<List<string>>)new NotifyBlock().GenerateBlock();
         }
         public bool Start()
         {
