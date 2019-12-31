@@ -5,7 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Blocks\ContentBlock.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TPL.DataProviders\TPL.DataProviders.csproj" />
   </ItemGroup>
 
 </Project>

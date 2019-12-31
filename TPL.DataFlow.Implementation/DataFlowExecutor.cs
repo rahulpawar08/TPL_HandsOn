@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using TPL.DataFlow.Implementation.Blocks;
 
@@ -20,7 +21,7 @@ namespace TPL.DataFlow.Implementation
             _storeBlock = (TransformBlock <List<string>, List<string>>)new StoreBlock().GenerateBlock();
             _notifyBlock = (ActionBlock<List<string>>)new NotifyBlock().GenerateBlock();
         }
-        public bool Start()
+        public async Task<bool> Start()
         {
             try
             {

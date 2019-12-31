@@ -5,11 +5,18 @@ namespace TPL.DataProviders
 {
     public class IncrementalDataProvider
     {
-        private const int BatchCount =30;
+        private readonly int BatchCount;
+        private readonly int MaxHotels;
 
-        public HotelResponse GetHotels(string supplierName, int ticktime)
+        public IncrementalDataProvider(int batchCount, int maxHotel)
         {
-            return GetIncrementalHotels(supplierName, ticktime);
+            BatchCount = batchCount == 0 ? 30 : batchCount;
+            MaxHotels = maxHotel == 0 ? 300 : maxHotel;
+        }
+
+        public HotelResponse GetHotels(HotelRequest hotelRequest)
+        {
+            return GetIncrementalHotels(hotelRequest.SupplierName, hotelRequest.TickTime);
         }
 
         private HotelResponse GetIncrementalHotels(string supplierName, int ticktime)
@@ -28,7 +35,9 @@ namespace TPL.DataProviders
             }
             hotelResponse.Hotels = hotels;
             hotelResponse.TickTime = updatedTickTime;
+            hotelResponse.IsComplete = endIndex >= MaxHotels;
 
+            Console.WriteLine("Complete status:"+ hotelResponse.IsComplete);
             return hotelResponse;
         }
     }

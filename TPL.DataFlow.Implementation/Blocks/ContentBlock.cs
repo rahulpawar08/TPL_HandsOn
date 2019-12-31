@@ -4,9 +4,8 @@ using System.Text;
 
 namespace TPL.DataFlow.Implementation.Blocks
 {
-    public abstract class BaseBlock
+    abstract class ContentBaseBlock:BaseBlock
     {
-       public abstract object GenerateBlock();
-
+        public abstract object LinkBlock(BaseBlock baseBlock);
     }
 }

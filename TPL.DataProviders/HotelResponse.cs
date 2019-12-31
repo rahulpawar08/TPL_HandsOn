@@ -6,5 +6,7 @@ namespace TPL.DataProviders
     {
         public List<string> Hotels = new List<string>();
         public int TickTime { get; set; }
+
+        public bool IsComplete { get; set; }
     }
 }
