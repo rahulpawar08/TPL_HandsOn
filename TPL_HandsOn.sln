@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPL_HandsOn", "TPL_HandsOn\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPL.DataFlow.Implementation", "TPL.DataFlow.Implementation\TPL.DataFlow.Implementation.csproj", "{FE6A96FE-6C83-484F-9BC6-B127DA6C0BD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPL.DataProviders", "TPL.DataProviders\TPL.DataProviders.csproj", "{926F4777-DC58-4E7D-BC52-5C4CA5E121E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FE6A96FE-6C83-484F-9BC6-B127DA6C0BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE6A96FE-6C83-484F-9BC6-B127DA6C0BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE6A96FE-6C83-484F-9BC6-B127DA6C0BD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{926F4777-DC58-4E7D-BC52-5C4CA5E121E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{926F4777-DC58-4E7D-BC52-5C4CA5E121E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{926F4777-DC58-4E7D-BC52-5C4CA5E121E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{926F4777-DC58-4E7D-BC52-5C4CA5E121E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
