@@ -57,7 +57,12 @@ namespace TPL.DataFlow.Implementation
             HotelRequest request = new HotelRequest();
             request.SupplierName = "Clarifi";
 
-            await _startBlock.GetHotels(request);
+            _startBlock.GetHotels(request);
+
+            //await Task.WhenAll(_fetcherBlock.Completion, _deltaCalculatorBlock.Completion, _storeBlock.Completion)
+            //    .ContinueWith(_ => _notifyBlock.Complete());
+
+            Task.WhenAll(_notifyBlock.Completion).Wait();
 
             Console.WriteLine("The execution of pipeline is complete");
         }

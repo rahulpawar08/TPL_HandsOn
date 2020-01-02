@@ -11,11 +11,11 @@ namespace TPL.DataFlow.Implementation.Blocks
         public override object GenerateBlock()
         {
             TransformBlock<List<string>, List<string>> deltaBlock = new TransformBlock<List<string>, List<string>>
-                (async hotels => await GetHotelDelta(hotels));
+                (hotels => GetHotelDelta(hotels));
             return deltaBlock;
         }
 
-        private async Task<List<string>> GetHotelDelta(List<string> hotels)
+        private List<string> GetHotelDelta(List<string> hotels)
         {
             List<string> deltaHotels = new List<string>();
             foreach (var hotel in hotels)

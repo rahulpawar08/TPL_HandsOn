@@ -86,22 +86,23 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
 
             } while (true);
 
+            //TEST THE PROPOGATION COMPLETION - THE MAIN PROGRAM SHOULD NOT HAVE A CONSOLE READLINE
+
             //await Task.WhenAll(tasks.ToArray());
             _fetcherBlock.Complete();
 
             //Task completionTask = _fetcherBlock.Completion;
             //await completionTask;
 
-
-            do
-            {
-                Task completionTask = _fetcherBlock.Completion;
-                if (completionTask.IsCompleted)
-                {
-                    Console.WriteLine("Fetcher is completed");
-                    break;
-                }
-            } while (true);
+            //do
+            //{
+            //    Task completionTask = _fetcherBlock.Completion;
+            //    if (completionTask.IsCompleted)
+            //    {
+            //        Console.WriteLine("Fetcher is completed");
+            //        break;
+            //    }
+            //} while (true);
         }
     }
 }

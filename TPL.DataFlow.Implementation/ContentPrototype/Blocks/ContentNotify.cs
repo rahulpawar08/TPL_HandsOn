@@ -13,11 +13,11 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
         ActionBlock<List<string>> _notifyBlock;
         public override object GenerateBlock()
         {
-            _notifyBlock = new ActionBlock<List<string>>(async hotels => await Notify(hotels));
+            _notifyBlock = new ActionBlock<List<string>>(hotels => Notify(hotels));
             return _notifyBlock;
         }
 
-        private async Task Notify(List<string> hotels)
+        private void Notify(List<string> hotels)
         {
             foreach (var hotel in hotels)
             {
