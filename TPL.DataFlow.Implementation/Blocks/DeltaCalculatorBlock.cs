@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 namespace TPL.DataFlow.Implementation.Blocks
@@ -10,11 +11,11 @@ namespace TPL.DataFlow.Implementation.Blocks
         public override object GenerateBlock()
         {
             TransformBlock<List<string>, List<string>> deltaBlock = new TransformBlock<List<string>, List<string>>
-                (hotels => GetHotelDelta(hotels));
+                (async hotels => await GetHotelDelta(hotels));
             return deltaBlock;
         }
 
-        private List<string> GetHotelDelta(List<string> hotels)
+        private async Task<List<string>> GetHotelDelta(List<string> hotels)
         {
             List<string> deltaHotels = new List<string>();
             foreach (var hotel in hotels)

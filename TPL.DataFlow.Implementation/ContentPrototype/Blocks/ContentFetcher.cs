@@ -17,9 +17,9 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
         TransformBlock<HotelResponse, List<string>> _fetcherBlock;
         public ContentFetcherBlock()
         {
-            _incrementalDataProvider = new IncrementalDataProvider(2,60);
-            _fetcherBlock = new TransformBlock<HotelResponse, List<string> >
-                (response => GetHotelList(response));
+            _incrementalDataProvider = new IncrementalDataProvider(2,20);
+            _fetcherBlock = new TransformBlock<HotelResponse, List<string>>
+                (response => GetHotelList(response),new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5,MaxMessagesPerTask=1 });
         }
 
         private List<string> GetHotelList(HotelResponse response)
@@ -34,7 +34,7 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
                 //Console.WriteLine("Output Count: " + _fetcherBlock.OutputCount);
                 //Console.WriteLine("TaskScheduler Id:" + TaskScheduler.Current.Id.ToString());
 
-                Thread.Sleep(200);
+                //Thread.Sleep(200);
             }
 
             return fetcherResponse;
@@ -64,11 +64,16 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
             do
             {
                 response = _incrementalDataProvider.GetHotels(request);
-                
+
                 //Task task = _fetcherBlock.SendAsync(response);
                 //tasks.Add(task);
+                Console.WriteLine("Calling the FetcherBlock");
 
-                 _fetcherBlock.Post(response);
+                _fetcherBlock.Post(response);
+
+                 //await _fetcherBlock.SendAsync(response);
+
+                Console.WriteLine("FetcherBlock execution done");
 
                 request.TickTime = response.TickTime;
                 Console.WriteLine("Loop count:" + loop_Count);
@@ -82,7 +87,21 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
             } while (true);
 
             //await Task.WhenAll(tasks.ToArray());
-            //_fetcherBlock.Complete();
+            _fetcherBlock.Complete();
+
+            //Task completionTask = _fetcherBlock.Completion;
+            //await completionTask;
+
+
+            do
+            {
+                Task completionTask = _fetcherBlock.Completion;
+                if (completionTask.IsCompleted)
+                {
+                    Console.WriteLine("Fetcher is completed");
+                    break;
+                }
+            } while (true);
         }
     }
 }
