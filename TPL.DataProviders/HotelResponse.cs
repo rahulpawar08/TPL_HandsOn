@@ -4,7 +4,7 @@ namespace TPL.DataProviders
 {
     public class HotelResponse
     {
-        public List<string> Hotels = new List<string>();
+        public List<Hotel> Hotels = new List<Hotel>();
         public int TickTime { get; set; }
 
         public bool IsComplete { get; set; }

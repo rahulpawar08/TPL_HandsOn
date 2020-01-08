@@ -12,37 +12,46 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
     public class ContentFetcherBlock : ContentBaseBlock
     {
         IncrementalDataProvider _incrementalDataProvider;
+        IDownloaderMonitoringService _downloaderMonitoringService;
 
         //TODO: check this approach later.
-        TransformBlock<HotelResponse, List<string>> _fetcherBlock;
+        TransformBlock<HotelResponse, List<Hotel>> _fetcherBlock;
         public ContentFetcherBlock()
         {
-            _incrementalDataProvider = new IncrementalDataProvider(2,20);
-            _fetcherBlock = new TransformBlock<HotelResponse, List<string>>
-                (response => GetHotelList(response),new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 5,MaxMessagesPerTask=1 });
+            _incrementalDataProvider = new IncrementalDataProvider(20,2000);
+            _fetcherBlock = new TransformBlock<HotelResponse, List<Hotel>>
+                (response => GetHotelList(response), GetExecutionOptions());
+            _downloaderMonitoringService = new DownloaderMonitoringService();
         }
 
-        private List<string> GetHotelList(HotelResponse response)
+        private List<Hotel> GetHotelList(HotelResponse response)
         {
-            List<string> fetcherResponse = new List<string>();
+            List<Hotel> fetcherResponse = new List<Hotel>();
             foreach (var hotel in response.Hotels)
             {
-                Console.WriteLine("In fetcher for " + hotel);
+                hotel.Status = Status.Processing;
+                hotel.BlockStatus.Add(TPLBlocks.Fetcher, BlockStatus.ProcessingComplete);
                 fetcherResponse.Add(hotel);
+
+                Console.WriteLine("In fetcher for " + hotel.Name);
+                //fetcherResponse.Add(hotel);
 
                 //Console.WriteLine("Input Count: " + _fetcherBlock.InputCount);
                 //Console.WriteLine("Output Count: " + _fetcherBlock.OutputCount);
                 //Console.WriteLine("TaskScheduler Id:" + TaskScheduler.Current.Id.ToString());
 
                 //Thread.Sleep(200);
+                _downloaderMonitoringService.UpdateTransactionalProgress(new List<string>() { hotel.Name });
             }
+            _downloaderMonitoringService.UpdateMilestoneProgress("Fetcher_Progress",
+                    new List<string>() { "Fetcher Block complete for "+response.Hotels.Count + "hotels" });
 
             return fetcherResponse;
         }
 
         public override object GenerateBlock()
         {
-            _fetcherBlock = new TransformBlock<HotelResponse, List<string>>
+            _fetcherBlock = new TransformBlock<HotelResponse, List<Hotel>>
                  (response => GetHotelList(response));
 
             return _fetcherBlock;
@@ -77,19 +86,26 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
 
                 request.TickTime = response.TickTime;
                 Console.WriteLine("Loop count:" + loop_Count);
-                loop_Count++;
+                
 
                 if (response.IsComplete)
                     break;
 
-               // _fetcherBlock.Complete();
+                // _fetcherBlock.Complete();
 
+                _downloaderMonitoringService.UpdateMilestoneProgress("Clarifi_Data_Download", 
+                    new List<string>() { "Download complete for batch " + loop_Count + " with " + response.Hotels.Count + "hotels" });
+
+               loop_Count++;
             } while (true);
 
+            _fetcherBlock.Complete();
+
+            #region ToBeRemoved
             //TEST THE PROPOGATION COMPLETION - THE MAIN PROGRAM SHOULD NOT HAVE A CONSOLE READLINE
 
             //await Task.WhenAll(tasks.ToArray());
-            _fetcherBlock.Complete();
+
 
             //Task completionTask = _fetcherBlock.Completion;
             //await completionTask;
@@ -103,6 +119,7 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
             //        break;
             //    }
             //} while (true);
+            #endregion
         }
     }
 }

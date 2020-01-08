@@ -11,7 +11,7 @@ namespace TPL.DataFlow.Implementation.Blocks
         public override object GenerateBlock()
         {
             TransformBlock<List<string>, List<string>> deltaBlock = new TransformBlock<List<string>, List<string>>
-                (hotels => GetHotelDelta(hotels));
+                (hotels => GetHotelDelta(hotels), GetExecutionOptions());
             return deltaBlock;
         }
 

@@ -12,35 +12,37 @@ namespace TPL.DataFlow.Implementation
     public class ContentDataFlowExecutor : IDataFlowExecutor
     {
 
-        private TransformBlock<HotelResponse, List<string>> _fetcherBlock;
-        private TransformBlock<List<string>, List<string>> _deltaCalculatorBlock;
-        private TransformBlock<List<string>, List<string>> _storeBlock;
-        private ActionBlock<List<string>> _notifyBlock;
+        private TransformBlock<HotelResponse, List<Hotel>> _fetcherBlock;
+        private TransformBlock<List<Hotel>, List<Hotel>> _deltaCalculatorBlock;
+        private TransformBlock<List<Hotel>, List<Hotel>> _storeBlock;
+        private ActionBlock<List<Hotel>> _notifyBlock;
         private ContentFetcherBlock _startBlock;
+        IDownloaderMonitoringService _downloaderMonitoringService;
 
         public ContentDataFlowExecutor()
         {
             _startBlock = new ContentFetcherBlock();
 
             //TODO: need a way to encapsulate the linking of the blocks
-            _fetcherBlock = (TransformBlock <HotelResponse, List<string>>)_startBlock.GenerateBlock();
-            _deltaCalculatorBlock = (TransformBlock<List<string>, List<string>>)new ContentDeltaCalculatorBlock().GenerateBlock();
-            _storeBlock = (TransformBlock<List<string>, List<string>>)new ContentStoreBlock().GenerateBlock();
-            _notifyBlock = (ActionBlock<List<string>>)new ContentNotifyBlock().GenerateBlock();
+            _fetcherBlock = (TransformBlock <HotelResponse, List<Hotel>>)_startBlock.GenerateBlock();
+            _deltaCalculatorBlock = (TransformBlock<List<Hotel>, List<Hotel>>)new ContentDeltaCalculatorBlock().GenerateBlock();
+            _storeBlock = (TransformBlock<List<Hotel>, List<Hotel>>)new ContentStoreBlock().GenerateBlock();
+            _notifyBlock = (ActionBlock<List<Hotel>>)new ContentNotifyBlock().GenerateBlock();
+            _downloaderMonitoringService = new DownloaderMonitoringService();
         }
         public async Task<bool> Start()
         {
             try
             {
-                Console.WriteLine("Creating Content DF Pipeline");
+                //Console.WriteLine("Creating Content DF Pipeline");
 
                 CreatePipeline();
 
-                Console.WriteLine("Starting Content DF Pipeline");
+                //Console.WriteLine("Starting Content DF Pipeline");
 
                 await StartExecution();
 
-                Console.WriteLine("Content DF Pipeline Complete");
+                //Console.WriteLine("Content DF Pipeline Complete");
 
                 return true;
             }
@@ -57,6 +59,9 @@ namespace TPL.DataFlow.Implementation
             HotelRequest request = new HotelRequest();
             request.SupplierName = "Clarifi";
 
+            _downloaderMonitoringService.UpdateMilestoneProgress("Pipeline",
+                  new List<string>() { "Pipeline Started" });
+
             _startBlock.GetHotels(request);
 
             //await Task.WhenAll(_fetcherBlock.Completion, _deltaCalculatorBlock.Completion, _storeBlock.Completion)
@@ -64,7 +69,10 @@ namespace TPL.DataFlow.Implementation
 
             Task.WhenAll(_notifyBlock.Completion).Wait();
 
-            Console.WriteLine("The execution of pipeline is complete");
+            _downloaderMonitoringService.UpdateMilestoneProgress("Pipeline",
+                  new List<string>() { "The execution of pipeline is complete." });
+
+            //Console.WriteLine("The execution of pipeline is complete");
         }
 
         private void CreatePipeline()
@@ -76,6 +84,9 @@ namespace TPL.DataFlow.Implementation
             _fetcherBlock.LinkTo(_deltaCalculatorBlock,options);
             _deltaCalculatorBlock.LinkTo(_storeBlock, options);
             _storeBlock.LinkTo(_notifyBlock, options);
+
+            _downloaderMonitoringService.UpdateMilestoneProgress("Pipeline",
+                   new List<string>() { "Pipeline Created" });
         }
 
         public bool Start(IEnumerable<string> supplierHotelIds)

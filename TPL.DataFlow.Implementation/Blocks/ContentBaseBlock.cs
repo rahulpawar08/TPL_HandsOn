@@ -9,5 +9,7 @@ namespace TPL.DataFlow.Implementation.Blocks
     {
         //public abstract ITargetBlock<TInput> GetBlock();
         public abstract object LinkBlock(ContentBaseBlock baseBlock);
+
+        
     }
 }

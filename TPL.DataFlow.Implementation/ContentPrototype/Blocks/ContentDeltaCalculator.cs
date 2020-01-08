@@ -11,22 +11,32 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
 {
     public class ContentDeltaCalculatorBlock : ContentBaseBlock
     {
-        TransformBlock<List<string>, List<string>> _deltaBlock;
+        TransformBlock<List<Hotel>, List<Hotel>> _deltaBlock;
+        IDownloaderMonitoringService _downloaderMonitoringService;
+
+        public ContentDeltaCalculatorBlock()
+        {
+            _downloaderMonitoringService = new DownloaderMonitoringService();
+        }
+
         public override object GenerateBlock()
         {
-            _deltaBlock = new TransformBlock<List<string>, List<string>>(list => CalculateDelta(list));
+            _deltaBlock = new TransformBlock<List<Hotel>, List<Hotel>>(list => CalculateDelta(list));
             return _deltaBlock;
         }
 
-        private List<string> CalculateDelta(List<string> hotels)
+        private List<Hotel> CalculateDelta(List<Hotel> hotels)
         {
-            List<string> deltaResponse = new List<string>();
+            List<Hotel> deltaResponse = new List<Hotel>();
             foreach(var hotel in hotels)
             {
-                Console.WriteLine("In Delta for " + hotel);
-                deltaResponse.Add(hotel + " delta ");
+                
+                hotel.BlockStatus.Add(TPLBlocks.Delta, BlockStatus.ProcessingComplete);
+                hotel.Name += " delta ";
+                deltaResponse.Add(hotel);
+                Console.WriteLine("In Delta for " + hotel.Name);
 
-
+                _downloaderMonitoringService.UpdateTransactionalProgress(new List<string>() { hotel.Name });
                 //Console.WriteLine("Input Count: " + _deltaBlock.InputCount);
                 //Console.WriteLine("Output Count: " + _deltaBlock.OutputCount);
                 //Console.WriteLine("TaskScheduler Id:" + TaskScheduler.Current.Id.ToString());
@@ -34,6 +44,8 @@ namespace TPL.DataFlow.Implementation.ContentPrototype.Blocks
 
                 Thread.Sleep(200);
             }
+            _downloaderMonitoringService.UpdateMilestoneProgress("Fetcher_Progress",
+                    new List<string>() { "Delta Block complete for " + hotels.Count + "hotels" });
             return deltaResponse;
         }
 

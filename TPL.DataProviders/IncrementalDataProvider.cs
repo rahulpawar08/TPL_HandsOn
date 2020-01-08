@@ -22,16 +22,20 @@ namespace TPL.DataProviders
         private HotelResponse GetIncrementalHotels(string supplierName, int ticktime)
         {
             HotelResponse hotelResponse = new HotelResponse();
-            List<string> hotels = new List<string>();
+            List<Hotel> hotels = new List<Hotel>();
             int updatedTickTime = ticktime + 1;
 
             int startIndex = ticktime * BatchCount;
             int endIndex = startIndex + BatchCount;
 
-            for (int index = startIndex; index <= endIndex; index++)
+            for (int index = startIndex; index < endIndex; index++)
             {
-                string str = "hotel:" + index + "-Ticktime:" + updatedTickTime;
-                hotels.Add(str);
+                //string str = "hotel:" + index + "-Ticktime:" + updatedTickTime;
+                //hotels.Add(str);
+                Hotel hotel = new Hotel();
+                hotel.Id = index;
+                hotel.Name = "hotel:" + index + "-Ticktime:" + updatedTickTime;
+                hotels.Add(hotel);
             }
             hotelResponse.Hotels = hotels;
             hotelResponse.TickTime = updatedTickTime;
